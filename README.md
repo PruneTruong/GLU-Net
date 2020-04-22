@@ -37,14 +37,16 @@ conda create -n GLUNet_env python=3.7
 conda activate GLUNet_env
 ```
 
-* Install all dependencies by running the following command:
+* Install all dependencies (except for cupy, see below) by running the following command:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**ATTENTION**, CUDA is required to run the code. Indeed, the correlation layer is implemented in CUDA using CuPy, which is why CuPy is a required dependency. 
-It can be installed using pip install cupy or alternatively using one of the provided binary packages as outlined in the CuPy repository.
+**ATTENTION**, CUDA is required to run the code. Indeed, the correlation layer is implemented in CUDA using CuPy, 
+which is why CuPy is a required dependency. It can be installed using pip install cupy or alternatively using one of the 
+provided binary packages as outlined in the CuPy repository. The code was developed using Python 3.7 & PyTorch 1.0 & CUDA 9.0, 
+which is why I installed cupy for cuda90. For another CUDA version, change accordingly. 
 
 ```bash
 pip install cupy-cuda90==5.4.0 --no-cache-dir 
@@ -60,18 +62,8 @@ The inputs are the paths to the source and target images. They are then passed
 to the network which outputs the corresponding flow field relating the source to the target image. The source is then warped according to
 the estimated flow, and a figure is saved. 
 
-```bash
-python test_GLUNet.py --path_source_image images/hp_source.png --path_target_image images/hp_target.png --write_dir evaluation/
+For this pair of images (provided to check that the code is working properly), the output is:
 
-optional arguments:
-* --pre_trained_models_dir : Directory containing the pre-trained-models (default is pre_trained_models/ours/)
-* --pre_trained_model: Name of the pre-trained-model (default= DPED_CityScape_ADE )
-```
-For this pair of images (provided to check that the code is working properly, attention large images), the output is:
-![alt text](/images/hp_test_output.png)
-
-
-Another example and output:
 ```bash
 python test_GLUNet.py --path_source_image images/yosemite_source.png --path_target_image images/yosemite_target.png --write_dir evaluation/
 
@@ -80,6 +72,16 @@ additional optional arguments:
 --pre_trained_model (default is DPED_CityScape_ADE)
 ```
 ![alt text](/images/yosemite_test_output.png)
+
+Another example and output (attention large images):
+```bash
+python test_GLUNet.py --path_source_image images/hp_source.png --path_target_image images/hp_target.png --write_dir evaluation/
+
+optional arguments:
+* --pre_trained_models_dir : Directory containing the pre-trained-models (default is pre_trained_models/)
+* --pre_trained_model: Name of the pre-trained-model (default= DPED_CityScape_ADE )
+```
+![alt text](/images/hp_test_output.png)
 
 
 # Datasets downloading 
@@ -121,7 +123,7 @@ To generate the training dataset and save it to disk:
 
 ```bash
 python save_training_dataset_to_disk.py --image_data_path /directory/to/original/training_datasets/ 
---csv_file datasets/csv_files/homo_aff_tps_train_DPED_CityScape_ADE.csv --save_dir /path/to/save_dir --plot True
+--csv_path datasets/csv_files/homo_aff_tps_train_DPED_CityScape_ADE.csv --save_dir /path/to/save_dir --plot True
 ```    
 It will create the images pairs and corresponding flow fields in save_dir/images and save_dir/flow respectively.
 
@@ -177,7 +179,7 @@ In the case of geometric matching, pairs of images present different viewpoints 
 
 To test on the HPatches dataset, HP-240 (images and flow rescaled to 240x240) and HP (original)
 ```bash
-python eval.py --model GLUNet --pre_trained_models DPED_CityScape_ADE --dataset HPatches --data_dir /directory/to/hpatches --save_dir /directory/to/save_dir
+python eval.py --model GLUNet --pre_trained_models DPED_CityScape_ADE --dataset HPatchesdataset --data_dir /directory/to/hpatches --save_dir /directory/to/save_dir
 
 optional argument: 
 * --hpatches_original_size To test on the original image size, True or False (default to False) 

@@ -1,5 +1,4 @@
 certifi==2019.11.28
-cupy-cuda90==5.4.0
 cycler==0.10.0
 fastrlock==0.4
 imageio==2.8.0

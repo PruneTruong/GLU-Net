@@ -66,8 +66,8 @@ if not os.path.isdir(args.save_dir):
 pre_trained_models = args.pre_trained_models
 
 # define the image processing parameters, the actual pre-processing is done within the model functions
-gt_flow_transform = transforms.Compose([ArrayToTensor()])  # only put channel first
 input_images_transform = transforms.Compose([ArrayToTensor(get_float=False)])  # only put channel first
+gt_flow_transform = transforms.Compose([ArrayToTensor()])  # only put channel first
 co_transform = None
 
 for pre_trained_model_type in pre_trained_models:
@@ -103,8 +103,7 @@ for pre_trained_model_type in pre_trained_models:
         name_to_save = args.model + '_' + args.datasets
 
         # no ground truth available, saving the flow file
-        if args.datasets == 'DatasetNoGT' or args.datasets == 'ETH3d_testing' or args.datasets == 'ETH3dNoGT'\
-                or args.datasets == 'DatasetNoGTDPED':
+        if args.datasets == 'DatasetNoGT':
             # only qualitative, no quantitative value because no gt
             test_set = datasets.__dict__[args.datasets](args.data_dir, first_image_transform=input_images_transform,
                                                         second_image_transform=input_images_transform)  # only test
