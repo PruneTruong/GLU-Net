@@ -27,6 +27,9 @@ if __name__ == "__main__":
     # Argument parsing
     parser = argparse.ArgumentParser(description='GLOBAL-Net train script')
     # Paths
+    parser.add_argument('--name_exp', type=str,
+                        default=time.strftime('%Y_%m_%d_%H_%M'),
+                        help='name of the experiment to save')
     parser.add_argument('--pre_loaded_training_dataset', default=False, type=boolean_string,
                         help='Synthetic training dataset is already created and saved in disk ? default is False')
     parser.add_argument('--training_data_dir', type=str,
@@ -46,7 +49,7 @@ if __name__ == "__main__":
                         default=4e-4, help='momentum constant')
     parser.add_argument('--start_epoch', type=int, default=-1,
                         help='start epoch')
-    parser.add_argument('--n_epoch', type=int, default=200,
+    parser.add_argument('--n_epoch', type=int, default=70,
                         help='number of training epochs')
     parser.add_argument('--batch-size', type=int, default=32,
                         help='training batch size')
@@ -56,7 +59,7 @@ if __name__ == "__main__":
                         help='weight decay constant')
     parser.add_argument('--div_flow', type=float, default=1.0,
                         help='div flow')
-    parser.add_argument('--seed', type=int, default=1982,
+    parser.add_argument('--seed', type=int, default=1986,
                         help='Pseudo-RNG seed')
 
 
@@ -132,10 +135,10 @@ if __name__ == "__main__":
                                   shuffle=True,
                                   num_workers=args.n_threads)
 
-    val_dataloader = DataLoader(val_dataset,    # validation set
-                                batch_size=20,
+    val_dataloader = DataLoader(val_dataset,
+                                batch_size=args.batch_size,
                                 shuffle=False,
-                                num_workers=args.n_threads)
+                                num_workers=args.n_threads) # validation set
 
 
     # models
@@ -157,7 +160,7 @@ if __name__ == "__main__":
 
     if args.pretrained:
         # reload from pre_trained_model
-        model, optimizer, scheduler, start_epoch, best_val=load_checkpoint(model, optimizer, scheduler,
+        model, optimizer, scheduler, start_epoch, best_val = load_checkpoint(model, optimizer, scheduler,
                                                                  filename=args.pretrained)
         # now individually transfer the optimizer parts...
         for state in optimizer.state.values():
@@ -169,13 +172,14 @@ if __name__ == "__main__":
         if not os.path.isdir(args.snapshots):
             os.mkdir(args.snapshots)
 
-        cur_snapshot = time.strftime('%Y_%m_%d_%H_%M')
+        cur_snapshot = args.name_exp
         if not osp.isdir(osp.join(args.snapshots, cur_snapshot)):
-            os.mkdir(osp.join(args.snapshots, cur_snapshot))
+            os.makedirs(osp.join(args.snapshots, cur_snapshot))
 
         with open(osp.join(args.snapshots, cur_snapshot, 'args.pkl'), 'wb') as f:
             pickle.dump(args, f)
-        best_val = -1
+
+        best_val = float("inf")
         start_epoch = 0
 
     # create summary writer
@@ -190,8 +194,7 @@ if __name__ == "__main__":
 
     for epoch in range(start_epoch, args.n_epoch):
         scheduler.step()
-        print('starting epoch {}: info scheduler last_epoch is {}, learning rate is {}'.format(epoch,
-                scheduler.last_epoch, scheduler.get_lr()[0]))
+        print('starting epoch {}:  learning rate is {}'.format(epoch, scheduler.get_lr()[0]))
 
         # Training one epoch
         train_loss = train_epoch(model,
@@ -224,8 +227,6 @@ if __name__ == "__main__":
         test_writer.add_scalar('mean EPE', val_mean_epe, epoch)
         test_writer.add_scalar('val loss', val_loss_grid, epoch)
 
-        if best_val < 0:
-            best_val = val_mean_epe
 
         is_best = val_mean_epe < best_val
         best_val = min(val_mean_epe, best_val)

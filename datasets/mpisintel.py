@@ -92,32 +92,3 @@ def mpi_sintel_final(root, source_image_transform=None, target_image_transform=N
                                co_transform=co_transform, loader=mpisintel_loader, mask=True)
 
     return train_dataset, test_dataset
-
-
-def mpi_sintel_both(root, source_image_transform=None, target_image_transform=None, flow_transform=None,
-                    co_transform=None, test_image_transform=None, split=None):
-    '''load images from both clean and final folders.
-    We cannot shuffle input, because it would very likely cause data snooping
-    for the clean and final frames are not that different'''
-    #assert(isinstance(split, str)), 'To avoid data snooping, you must provide a static list of train/val when dealing with both clean and final.'
-    ' Look at Sintel_train_val.txt for an example'
-    train_list1, test_list1 = make_dataset(root, split, 'clean')
-    train_list2, test_list2 = make_dataset(root, split, 'final')
-    train_dataset = ListDataset(root, train_list1 + train_list2, source_image_transform=source_image_transform,
-                                target_image_transform=target_image_transform,
-                                flow_transform=flow_transform,
-                                co_transform=co_transform, loader=mpisintel_loader, mask=True)
-    if test_image_transform is None:
-        test_dataset = ListDataset(root, test_list1 + test_list2, source_image_transform=source_image_transform,
-                                   target_image_transform=target_image_transform,
-                                   flow_transform=flow_transform,
-                                   co_transform=co_flow_and_images_transforms.CenterCrop((384, 1024)),
-                                   loader=mpisintel_loader, mask=True)
-    else:
-        test_dataset = ListDataset(root, test_list1 + test_list2, source_image_transform=test_image_transform,
-                                   target_image_transform=test_image_transform,
-                                   flow_transform=flow_transform,
-                                   co_transform=co_flow_and_images_transforms.CenterCrop((384,1024)),
-                                   loader=mpisintel_loader, mask=True)
-
-    return train_dataset, test_dataset

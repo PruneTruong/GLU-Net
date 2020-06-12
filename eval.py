@@ -71,7 +71,7 @@ gt_flow_transform = transforms.Compose([ArrayToTensor()])  # only put channel fi
 co_transform = None
 
 for pre_trained_model_type in pre_trained_models:
-    print(pre_trained_model_type)
+    print('model: ' + args.model + ', pre-trained model: ' + pre_trained_model_type)
     with torch.no_grad():
 
         # define the network to use

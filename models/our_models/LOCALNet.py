@@ -8,11 +8,7 @@ from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, \
 from models.feature_backbones.VGG_features import VGGPyramid
 import torch.nn.functional as F
 os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
-try:
-	from models.correlation import correlation # the custom cost volume layer
-except:
-	sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
-
+from models.correlation import correlation # the custom cost volume layer
 import numpy as np
 
 

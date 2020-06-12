@@ -41,21 +41,21 @@ def make_dataset(dir, split=None, dataset_name=None):
 
 
 def PreMadeDataset(root, source_image_transform=None, target_image_transform=None, flow_transform=None,
-                   co_transform=None, split=None, mask_zero_borders=False):
+                   co_transform=None, split=None):
     # that is only reading and loading the data and applying transformations to both datasets
     if isinstance(root, list):
         train_list=[]
         test_list=[]
         for sub_root in root:
             _, dataset_name = os.path.split(sub_root)
-            print(dataset_name)
             sub_train_list, sub_test_list = make_dataset(sub_root, split, dataset_name=dataset_name)
             train_list.extend(sub_train_list)
             test_list.extend(sub_test_list)
         root = os.path.dirname(sub_root)
     else:
         train_list, test_list = make_dataset(root, split)
-    print(root)
+    print('Loading dataset at {}'.format(root))
+
     train_dataset = ListDataset(root, train_list, source_image_transform=source_image_transform,
                                 target_image_transform=target_image_transform,
                                 flow_transform=flow_transform, co_transform=co_transform)

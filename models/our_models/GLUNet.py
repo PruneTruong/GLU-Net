@@ -11,10 +11,7 @@ from models.our_models.mod import OpticalFlowEstimatorNoDenseConnection, Optical
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow, warp
 from models.our_models.consensus_network_modules import MutualMatching, NeighConsensus, FeatureCorrelation
 os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
-try:
-    from models.correlation import correlation # the custom cost volume layer
-except:
-    sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
+from models.correlation import correlation # the custom cost volume layer
 import numpy as np
 
 

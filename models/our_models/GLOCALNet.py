@@ -9,11 +9,8 @@ from .mod import CMDTop
 from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow
 import torch.nn.functional as F
-os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
-try:
-	from models.correlation import correlation # the custom cost volume layer
-except:
-	sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
+os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory
+from models.correlation import correlation # the custom cost volume layer
 
 
 class GLOCALNet_model(nn.Module):

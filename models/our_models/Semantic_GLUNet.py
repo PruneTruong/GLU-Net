@@ -12,11 +12,7 @@ from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, warp, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow
 from models.our_models.consensus_network_modules import MutualMatching, NeighConsensus, FeatureCorrelation
 os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
-try:
-	from models.correlation import correlation # the custom cost volume layer
-except:
-	sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
-
+from models.correlation import correlation # the custom cost volume layer
 
 class SemanticGLUNet_model(nn.Module):
     """

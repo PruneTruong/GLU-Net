@@ -7,10 +7,13 @@ Authors: Prune Truong, Martin Danelljan and Radu Timofte
 
 Arxiv: [GLU-Net](https://arxiv.org/abs/1912.05524)
 
-CVPR: To be released. 
+CVPR: To be released.
 
 
-For any questions, issues or recommendations, please contact Prune at truongp@ethz.ch
+Poster: https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing 
+
+
+For any questions, issues or recommendations, please contact Prune at prune.truong@vision.ee.ethz.ch
 
 # Network
 
@@ -99,8 +102,8 @@ The path to the original images as well as the geometric transformation paramete
 
 * Download the [DPED dataset](http://people.ee.ethz.ch/~ihnatova/) (54 GB) ==> images are created in original_images/
 * Download the [CityScapes dataset](https://www.cityscapes-dataset.com/)
-⋅⋅⋅download 'leftImg8bit_trainvaltest.zip' (11GB, left 8-bit images - train, val, and test sets', 5000 images)⋅⋅ ==> images are created in CityScape/
-⋅⋅⋅download leftImg8bit_trainextra.zip (44GB, left 8-bit images - trainextra set, 19998 images)⋅⋅ ==> images are created in CityScape_extra/
+    - download 'leftImg8bit_trainvaltest.zip' (11GB, left 8-bit images - train, val, and test sets', 5000 images) ==> images are created in CityScape/
+    - download leftImg8bit_trainextra.zip (44GB, left 8-bit images - trainextra set, 19998 images) ==> images are created in CityScape_extra/
 
 * Download the [ADE-20K dataset](https://groups.csail.mit.edu/vision/datasets/ADE20K/) (3.8 GB, 20.210 images) ==> images are created in ADE20K_2016_07_26/
 
@@ -149,7 +152,7 @@ Training files for GLUNet (and its variants, including Semantic-GLU-Net), GLOCAL
 
 **This will create the synthetic training and evaluation pairs along with the ground-truth on the fly !**
 ```bash 
-python train_GLUNet.py --training_data_dir /path/to/directory/original_images-for-training/ --evalution_data_dir /path/to/directory/original_images-for-evaluation/
+python train_GLUNet.py --name_exp GLUNet_train --training_data_dir /path/to/directory/original_images-for-training/ --evaluation_data_dir /path/to/directory/original_images-for-evaluation/
 
 if the network is already pretrained and the user wants to start the training from an old weight file
 * --pretrained /path/to/pretrained_file.pth
@@ -157,8 +160,8 @@ if the network is already pretrained and the user wants to start the training fr
 
 **To load the pre-saved synthetic training and evaluation image pairs and ground truth flow fields instead (created earlier and saved to disk):**
 ```bash 
-python train_GLUNet.py --pre_loaded_training_dataset True --training_data_dir /path/to/directory/synthetic_training_image_pairs_and_flows/
---evalution_data_dir /path/to/directory/synthetic_validation_image_pairs_and_flows/
+python train_GLUNet.py --name_exp GLUNet_train --pre_loaded_training_dataset True --training_data_dir /path/to/directory/synthetic_training_image_pairs_and_flows/
+--evaluation_data_dir /path/to/directory/synthetic_validation_image_pairs_and_flows/
 
 if the network is already pretrained and the user wants to start the training from an old weight file
 * --pretrained /path/to/pretrained_file.pth
@@ -224,6 +227,14 @@ In the case of semantic matching, pairs of images show two instances of the same
 To test on TSS
 ```bash
 python eval.py --model GLUNet --flipping_condition True --pre_trained_models DPED_CityScape_ADE --dataset TSS --data_dir /directory/to/TSS/DJOBS --save_dir /directory/to/save_dir 
+
+optional arguments:
+* --flipping condition True or False, for TSS recommanded
+```
+
+or for the custom network:
+```bash
+python eval.py --model SemanticGLUNet --flipping_condition True --pre_trained_models DPED_CityScape_ADE --dataset TSS --data_dir /directory/to/TSS/JOBS --save_dir /directory/to/save_dir 
 
 optional arguments:
 * --flipping condition True or False, for TSS recommanded

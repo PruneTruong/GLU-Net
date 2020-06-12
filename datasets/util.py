@@ -77,16 +77,6 @@ def center_crop(img, size):
     return img_pad, x1, y1
 
 
-def get_mapping_horizontal_flipping(image):
-    H, W, C = image.shape
-    mapping = np.zeros((H,W,2), np.float32)
-    for j in range(H):
-        for i in range(W):
-            mapping[j, i, 0] = W - i
-            mapping[j, i, 1] = j
-    return mapping, remap_using_correspondence_map(image, mapping[:,:,0], mapping[:,:,1])
-
-
 def convert_flow_to_mapping(flow, output_channel_first=True):
     if not isinstance(flow, np.ndarray):
         #torch tensor
