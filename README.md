@@ -5,15 +5,23 @@ This is the official implementation of our paper :
 
 Authors: Prune Truong, Martin Danelljan and Radu Timofte
 
-Arxiv: [GLU-Net](https://arxiv.org/abs/1912.05524)
-
-CVPR: To be released.
-
-
-Poster: https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing 
+\[[Paper](https://arxiv.org/abs/1912.05524)\]\[[Poster](https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing)\]
+\[[Oral Video](https://www.youtube.com/watch?v=xB2gNx8f8Xc&feature=emb_title)\]\[[Teaser Video](https://www.youtube.com/watch?v=s5OUdkM9QLo)\]
 
 
 For any questions, issues or recommendations, please contact Prune at prune.truong@vision.ee.ethz.ch
+
+If our project is helpful for your research, please consider citing :
+```bash
+@inproceedings{GLUNet_Truong_2020,
+      title = {{GLU-Net}: Global-Local Universal Network for dense flow and correspondences},
+      author    = {Prune Truong and
+                   Martin Danelljan and
+                   Radu Timofte},
+      year = {2020},
+      booktitle = {2020 {IEEE} Conference on Computer Vision and Pattern Recognition, {CVPR} 2020}
+}
+```
 
 # Network
 
@@ -31,7 +39,26 @@ They are all illustrated below:
 
 For more details, refer to our [paper](https://arxiv.org/abs/1912.05524)
 
-# Installation
+
+# Table of Content
+
+1. [Installation](#Installation)
+2. [Test on your own image pairs !](#test_pairs)
+3. [Datasets downloading](#download_dataset)
+    1. [Training datasets](#training_dataset)
+    2. [Testing datasets](#testing_dataset)
+4. [Training](#training)
+5. [Evaluation](#evaluation)
+    1. [Performance on geometric matching dataset](#geometric_matching)
+    2. [Performance on semantic matching dataset](#semantic_matching)
+    3. [Performance on optical flow dataset](#OF)
+6. [Acknowledgement](#acknowledgement)
+7. [Changelog](#changelog)
+
+
+# 
+
+# 1. Installation <a name="Installation"></a>
 
 * Create and activate conda environment with Python 3.x
 
@@ -58,7 +85,7 @@ pip install cupy-cuda90==5.4.0 --no-cache-dir
 * **Download an archive with pre-trained models [click](https://drive.google.com/open?id=15yXIi8kJbCyXCAHzg-UbMQ6RD2lJ1nOi) and extract it to the project folder**                                                
 
 
-# Test on your own image pairs ! 
+# 2. Test on your own image pairs ! <a name="test_pairs"></a>
 
 One can test GLU-Net on a pair of images using test_GLUNet.py and the provided trained model weights. 
 The inputs are the paths to the source and target images. They are then passed
@@ -87,9 +114,9 @@ optional arguments:
 ![alt text](/images/hp_test_output.png)
 
 
-# Datasets downloading 
+# 3. Datasets downloading <a name="download_dataset"></a>
 
-## Training datasets
+## 3.1. Training datasets <a name="training_dataset"></a>
 For the training, we use a combination of the DPED, CityScapes and ADE-20K datasets. 
 The DPED training dataset is composed of only approximately 5000 sets of images taken by four different cameras. 
 We use the images from two cameras, resulting in around  10,000 images. 
@@ -130,12 +157,7 @@ python save_training_dataset_to_disk.py --image_data_path /directory/to/original
 ```    
 It will create the images pairs and corresponding flow fields in save_dir/images and save_dir/flow respectively.
 
-
-**To directly download the created synthetic pairs of images and corresponding flow fields**:
-* training dataset (corresponding to datasets/csv_files/homo_aff_tps_train_DPED_CityScape_ADE.csv): To come
-* evaluation dataset (corresponding to datasets/csv_files/homo_aff_tps_test_DPED_CityScape_ADE.csv): To come
-
-## Testing datasets
+## 3.2. Testing datasets <a name="testing_dataset"></a>
 
 The testing datasets are available at the following links:
 * HPatches dataset: Download HPatches dataset (Full image sequences). The dataset is available [here](https://github.com/hpatches/hpatches-dataset) at the end of the page.
@@ -146,7 +168,7 @@ The corresponding csv files for each viewpoint ID with the path to the images an
 * KITTI datasets: Both KITTI-2012 and KITTI-2015 are available [here](http://www.cvlibs.net/datasets/kitti/eval_flow.php)
 
 
-# Training 
+# 4.0 Training <a name="training"></a>
 
 Training files for GLUNet (and its variants, including Semantic-GLU-Net), GLOCAL-Net, LocalNet and GlobalNet are available. 
 
@@ -170,9 +192,9 @@ if the network is already pretrained and the user wants to start the training fr
 In the training files, one can modify all the parameters of the network. The default ones are for GLU-Net. 
 
 
-# Evaluation  
+# 5. Evaluation  <a name="evaluation"></a>
 
-# Performance on geometric matching dataset 
+# 5.1. Performance on geometric matching dataset <a name="geometric_matching"></a>
 
 In the case of geometric matching, pairs of images present different viewpoints of the same scene. 
 
@@ -217,7 +239,7 @@ No ground-truth flow field between the image pairs are available, therefore thos
 ![alt text](/images/DPED.jpg)
 
 
-# Performance on semantic matching dataset 
+# 5.2. Performance on semantic matching dataset <a name="semantic_matching"></a>
 
 
 In the case of semantic matching, pairs of images show two instances of the same object or scene category. 
@@ -260,7 +282,7 @@ Seasonnal changes:
 
 
 
-# Performance on optical flow dataset 
+# 5.3. Performance on optical flow dataset <a name="OF"></a>
 
 
 In the case of optical flow dataset, pairs of images show two consecutive images of a sequence or video. 
@@ -287,18 +309,11 @@ python eval.py --model GLUNet --pre_trained_models DPED_CityScape_ADE --dataset 
 Quantitative  results  on  optical  flow  KITTI  training datasets.  Fl-all: Percentage of outliers averaged over all pixels. 
 Inliers are defined as AEPE < 3 pixels or < 5 %. Lower F1 and AEPE are best.
 
+# 6. Acknowledgement <a name="Acknowledgement"></a>
 
-# How to cite
+We borrow code from public projects, such as [DGC-Net](https://github.com/AaltoVision/DGC-Net), [PWC-Net](https://github.com/NVlabs/PWC-Net), [NC-Net](https://github.com/ignacio-rocco/ncnet), [Flow-Net-Pytorch](https://github.com/ClementPinard/FlowNetPytorch)...
 
-If you use this software in your own research, please cite our publication:
+# 7. Changelog <a name="changelog"></a>
 
-```bash
-@inproceedings{GLUNet_Truong_2020,
-      title = {{GLU-Net}: Global-Local Universal Network for dense flow and correspondences},
-      author    = {Prune Truong and
-                   Martin Danelljan and
-                   Radu Timofte},
-      year = {2020},
-      booktitle = {2020 {IEEE} Conference on Computer Vision and Pattern Recognition, {CVPR} 2020}
-}
-```
+* Remove useless parts + rename some functions / parameters
+* Modified READme to make it clearer
