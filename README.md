@@ -3,14 +3,18 @@ This is the official implementation of our paper :
 
 **GLU-Net: Global-Local Universal Network for dense flow and correspondences (CVPR 2020-Oral).**
 
-Authors: Prune Truong, Martin Danelljan and Radu Timofte
-
+Authors: Prune Truong, Martin Danelljan and Radu Timofte <br />
 \[[Paper](https://arxiv.org/abs/1912.05524)\]\[[Poster](https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing)\]
 \[[Oral Video](https://www.youtube.com/watch?v=xB2gNx8f8Xc&feature=emb_title)\]\[[Teaser Video](https://www.youtube.com/watch?v=s5OUdkM9QLo)\]
 
 
-For any questions, issues or recommendations, please contact Prune at prune.truong@vision.ee.ethz.ch
 
+Check out our new paper **[GOCor]**(https://arxiv.org/abs/2009.07823) ! Code will be released soon [here](https://github.com/PruneTruong/GOCor). 
+<br /><br /><br />
+
+
+
+For any questions, issues or recommendations, please contact Prune at prune.truong@vision.ee.ethz.ch <br />
 If our project is helpful for your research, please consider citing :
 ```bash
 @inproceedings{GLUNet_Truong_2020,
