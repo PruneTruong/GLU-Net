@@ -9,7 +9,7 @@ Authors: Prune Truong, Martin Danelljan and Radu Timofte <br />
 
 
 
-Check out our new paper **[GOCor]**(https://arxiv.org/abs/2009.07823) ! Code will be released soon [here](https://github.com/PruneTruong/GOCor). 
+Check out our new paper [**GOCor**](https://arxiv.org/abs/2009.07823) ! Code will be released soon [here](https://github.com/PruneTruong/GOCor). 
 <br /><br /><br />
 
 
