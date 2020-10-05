@@ -59,7 +59,7 @@ def F1_kitti_2015(input_flow, target_flow, tau=[3.0, 0.05]):
     return len(dist[mask.detach()])
 
 
-def calculate_epe_and_pck_per_dataset(test_dataloader, network, device, threshold_range, path_to_save,
+def calculate_epe_and_pck_per_dataset(test_dataloader, network, device, threshold_range, path_to_save=None,
                                       compute_F1=False, save=False):
     aepe_array = []
     pck_alpha_0_05_over_image = []

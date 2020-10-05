@@ -4,7 +4,8 @@ This is the official implementation of our paper :
 **GLU-Net: Global-Local Universal Network for dense flow and correspondences (CVPR 2020-Oral).**
 
 Authors: Prune Truong, Martin Danelljan and Radu Timofte <br />
-\[[Paper](https://arxiv.org/abs/1912.05524)\]\[[Poster](https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing)\]
+\[[Paper](https://arxiv.org/abs/1912.05524)\]\[[Website](https://prunetruong.com/research/glu-net)\]
+\[[Poster](https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing)\]
 \[[Oral Video](https://www.youtube.com/watch?v=xB2gNx8f8Xc&feature=emb_title)\]\[[Teaser Video](https://www.youtube.com/watch?v=s5OUdkM9QLo)\]
 
 
@@ -171,6 +172,8 @@ The corresponding csv files for each viewpoint ID with the path to the images an
 
 * KITTI datasets: Both KITTI-2012 and KITTI-2015 are available [here](http://www.cvlibs.net/datasets/kitti/eval_flow.php)
 
+* ETH3D dataset: See below in section 5.1
+
 
 # 4.0 Training <a name="training"></a>
 
@@ -217,8 +220,8 @@ optional argument:
 Out of the 120 sequences of HPatches, we only evaluate on the 59 sequences in HP labelled with v_X, which have viewpoint changes, 
 thus excluding the ones labelled i_X, which only have illumination changes. 
 
-
-
+<br /><br />
+AEPE on the different viewpoints of HP-240 and HP:
 | Method |  HP-240 I  | HP-240 II |  HP-240 III |  HP-240 IV |  HP-240 V | HP-240 All    |  HP I |  HP II |  HP III |  HP IV |  HP V | HP All    |
 | -------------------- |:-----------:| ------------:| ------------- | ------------ | ----------- | ------ |:-----------:| ------------:| ------------- | ------------ | ----------- | ------ |
 | PWC-Net              | 5.74        | 17.69        | 20.46         | 27.61        | 36.97       | 21.68  | 23.93   |76.33    | 91.30   | 124.22 | 164.91 | 96.14 |
@@ -226,14 +229,56 @@ thus excluding the ones labelled i_X, which only have illumination changes.
 | DGC-Net (paper)      | 1.55 	     | 5.53 	    | 8.98 	        | 11.66 	   | 16.70       | 8.88   | - | - | - | - | - | - |
 | DGC-Net (repo)       | 1.74 	     | 5.88 	    | 9.07 	        | 12.14 	   | 16.50       | 9.07   | 5.71   | 20.48    | 34.15   | 43.94 | 62.01 | 33.26 |
 | **GLU-Net (Ours)**       | **0.59**        | **4.05**         | **7.64**         | **9.82**         | **14.89**       | **7.40**   | **1.55**  | **12.66**   | **27.54** | **32.04**  | **51.47**  | **25.05** |
+| **GLU-Net (this repo)**       | **0.59**        | **4.05**         | **7.64**         | **9.82**         | **14.89**       | **7.40**   | **1.53**  | **12.62**   | **27.38** | **31.95**  | **51.11**  | **24.91** |
 
-AEPE on the different viewpoints of HP-240 and HP.
 
-
-Illustration on two examples of pairs of HP
+Illustration on two examples of pairs of HP:
 ![alt text](/images/hp.jpg)
 
 ## ETH3D dataset 
+
+**Data preparation**: execute 'bash download_ETH3D.sh', the file is stored in datasets/
+It does the following: 
+- Create your root directory ETH3D/, create two sub-directories multiview_testing/ and multiview_training/
+- Download the "Low rew multi-view, training data, all distorted images" [here](https://www.eth3d.net/data/multi_view_training_rig.7z) and unzip them in multiview_training/
+- Download the "Low rew multi-view, testing data, all undistorted images" [here](https://www.eth3d.net/data/multi_view_test_rig_undistorted.7z) and unzip them in multiview_testing/
+- We directly provide correspondences for pairs of images taken at different intervals. There is one bundle file for each dataset and each rate of interval, for example "lakeside_every_5_rate_of_3". 
+This means that we sampled the source images every 5 images and the target image is taken at a particular rate from each source image. Download all these files [here](https://drive.google.com/file/d/1Okqs5QYetgVu_HERS88DuvsABGak08iN/view?usp=sharing) and unzip them. 
+
+As illustration, your root ETH3D directory should be organised as follows:
+<pre>
+/ETH3D/
+       multiview_testing/
+                        lakeside/
+                        sand_box/
+                        storage_room/
+                        storage_room_2/
+                        tunnel/
+       multiview_training/
+                        delivery_area/
+                        electro/
+                        forest/
+                        playground/
+                        terrains/
+        info_ETH3D_files/
+</pre>
+The organisation of your directories is important, since the bundle files contain the relative paths to the images, from the ETH3D root folder. 
+
+<br /><br />
+**Evaluation**: for each interval rate (3,5,7,9,11,13,15), we compute the metrics for each of the sub-datasets (lakeside, delivery area and so on). The final metrics are the average over all datasets for each rate. 
+```bash
+python eval_ETH3D.py --model GLUNet --pre_trained_models DPED_CityScape_ADE --data_dir /directory/to/ETH3D --save_dir /directory/to/save_dir 
+```
+
+<br />
+AEPE for different rates of intervals between image pairs. These results are computed with a slightly more precise ground-truth than in the paper.
+
+| Method               | rate=3   | rate=5 |   rate=7  |  rate=9   |  rate=11  | rate=13   |rate=15  |
+| -------------------- |:----:| ---:| ---- | ------------ | ----------- | ------ |:-----------:| 
+| PWC-Net              | **1.75** | **2.10** | **3.21**  | 5.59 |  14.35 | 27.49 |  43.41  |
+| LiteFlowNet          | 1.66 | 2.58 | 6.05  | 12.95| 29.67  | 52.41 | 74.96 |
+| DGC-Net              | 2.49 | 3.28 | 4.18  | 5.35 | 6.78  | 9.02  |  12.23 |
+| **GLU-Net (Ours)**   | 1.98 | 2.54 | 3.49  | **4.24** |  **5.61** |  **7.55** | **10.78**  |
 
 
 ## Qualitative examples on the testing set of DPED
@@ -265,6 +310,21 @@ python eval.py --model SemanticGLUNet --flipping_condition True --pre_trained_mo
 optional arguments:
 * --flipping condition True or False, for TSS recommanded
 ```
+
+<br />
+PCK [%] obtained on TSS for the task of semantic matching
+
+| Method | FG3DCar | JODS  |  PASCAL | avg.|
+| -------------------- |:----:| ----:| ---  | ---- |
+| PARN (VGG-16)        | 87.6 | 71.6 | 68.8 | 76.0 |
+| NC-Net               | 94.5 | 81.4 | 57.1 | 77.7 |
+| DCCNet               | 93.5 | 82.6 | 57.6 | 77.9 |
+| SAM-Net              | **96.1** | 82.2 | 67.2 | 81.8 |
+| **GLU-Net (Ours)**   | 93.2 | 73.3 | 71.1 | 79.2 |
+| **GLU-Net (this repo)**   | 93.2 | 73.7 | 71.1 | 79.3 |
+| **Semantic-GLU-Net (Ours)**     | 94.4 | 75.5 | **78.3** | **82.8** |
+| **Semantic-GLU-Net (this repo)**     | 94.4 | 75.7 | **78.3** | **82.8** |
+
 
 Illustration on examples of the TSS dataset
 ![alt text](/images/TSS-more.jpg)
@@ -321,3 +381,4 @@ We borrow code from public projects, such as [DGC-Net](https://github.com/AaltoV
 
 * Remove useless parts + rename some functions / parameters
 * Modified READme to make it clearer
+* Added website + evaluation code for ETH3D
