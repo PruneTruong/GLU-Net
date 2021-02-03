@@ -48,8 +48,8 @@ class ResizeFlow(object):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         _, h_original, w_original = tensor.shape
         resized_tensor = F.interpolate(tensor.unsqueeze(0), self.size, mode='bilinear', align_corners=False)
-        resized_tensor[:,0,:,:] *= float(self.size[1])/float(w_original)
-        resized_tensor[:,1,:,:] *= float(self.size[0])/float(h_original)
+        resized_tensor[:, 0, :, :] *= float(self.size[1])/float(w_original)
+        resized_tensor[:, 1, :, :] *= float(self.size[0])/float(h_original)
         return resized_tensor.squeeze(0)
 
 

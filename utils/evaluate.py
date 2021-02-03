@@ -36,7 +36,7 @@ def correct_correspondences(input_flow, target_flow, alpha, img_size):
     # dist is shape BxHgtxWgt
     pck_threshold = alpha * img_size
     mask = dist.le(pck_threshold) # Computes dist ≤ pck_threshold element-wise (element then equal to 1)
-    return len(dist[mask.detach()])
+    return mask.sum().item()
 
 
 def F1_kitti_2015(input_flow, target_flow, tau=[3.0, 0.05]):
@@ -56,7 +56,7 @@ def F1_kitti_2015(input_flow, target_flow, tau=[3.0, 0.05]):
     gt_magnitude = torch.norm(target_flow, p=2, dim=1)
     # dist is shape BxHgtxWgt
     mask = dist.gt(3.0) & (dist/gt_magnitude).gt(0.05)
-    return len(dist[mask.detach()])
+    return mask.sum().item()
 
 
 def calculate_epe_and_pck_per_dataset(test_dataloader, network, device, threshold_range, path_to_save=None,
@@ -94,9 +94,10 @@ def calculate_epe_and_pck_per_dataset(test_dataloader, network, device, threshol
             '''
             ratio_h = float(h_g) / float(flow_estimated.shape[2])
             ratio_w = float(w_g) / float(flow_estimated.shape[3])
-            flow_estimated = nn.functional.interpolate(flow_estimated, size=(h_g, w_g), mode='bilinear', align_corners=False)
-            flow_estimated[:,0,:,:] *= ratio_w
-            flow_estimated[:,1,:,:] *= ratio_h
+            flow_estimated = nn.functional.interpolate(flow_estimated, size=(h_g, w_g), mode='bilinear',
+                                                       align_corners=False)
+            flow_estimated[:, 0, :, :] *= ratio_w
+            flow_estimated[:, 1, :, :] *= ratio_h
         assert flow_estimated.shape == flow_gt.shape
 
         flow_target_x = flow_gt.permute(0, 2, 3, 1)[:, :, :, 0]

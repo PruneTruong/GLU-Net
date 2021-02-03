@@ -78,13 +78,16 @@ def multiscaleEPE(network_output, target_flow, robust_L1_loss=False, mask=None, 
 
             if mask is not None:
                 mask = sparse_max_pool(mask.float().unsqueeze(1), (h, w))
+                mask = mask.bool() if float(torch.__version__[:3]) >= 1.1 else mask.byte()
         else:
-            target_scaled = F.interpolate(target, (h, w), mode='bilinear')
+            target_scaled = F.interpolate(target, (h, w), mode='bilinear', align_corners=False)
 
             if mask is not None:
                 # mask can be byte or float or uint8 or int
-                # resize first in float, and then convert to byte/int to remove the borders which are values between 0 and 1
-                mask = F.interpolate(mask.float().unsqueeze(1), (h, w), mode='bilinear').byte()
+                # resize first in float, and then convert to byte/int to remove the borders
+                # which are values between 0 and 1
+                mask = F.interpolate(mask.float().unsqueeze(1), (h, w), mode='bilinear', align_corners=False).byte()
+                mask = mask.bool() if float(torch.__version__[:3]) >= 1.1 else mask.byte()
 
         if robust_L1_loss:
             if mask is not None:

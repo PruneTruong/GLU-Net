@@ -101,7 +101,8 @@ def train_epoch(net,
             if mask_gt.shape[1] != h or mask_gt.shape[2] != w:
                 # mask_gt does not have the proper shape
                 mask_gt = F.interpolate(mask_gt.float().unsqueeze(1), (h, w), mode='bilinear',
-                                        align_corners=False).squeeze(1).byte() #bxhxw
+                                        align_corners=False).squeeze(1).byte()  #bxhxw
+                mask_gt = mask_gt.bool() if float(torch.__version__[:3]) >= 1.1 else mask_gt.byte()
 
             Loss = multiscaleEPE(output_net, flow_gt, weights=loss_grid_weights,
                                  sparse=False, mean=False, mask=mask_gt)
@@ -177,6 +178,7 @@ def validate_epoch(net,
                 # mask_gt does not have the proper shape
                 mask_gt = F.interpolate(mask_gt.float().unsqueeze(1), (h, w), mode='bilinear',
                                         align_corners=False).squeeze(1).byte()  # bxhxw
+                mask_gt = mask_gt.bool() if float(torch.__version__[:3]) >= 1.1 else mask_gt.byte()
 
             if apply_mask:
                 Loss = multiscaleEPE(output_net, flow_gt, weights=loss_grid_weights,

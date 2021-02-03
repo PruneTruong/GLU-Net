@@ -138,11 +138,11 @@ class SemanticGLUNet_model(nn.Module):
             target_img = torch.from_numpy(np.uint8(target_img)).permute(0, 3, 1, 2)
 
         source_img_copy = torch.nn.functional.interpolate(input=source_img.float().to(device),
-                                                     size=(int_preprocessed_height, int_preprocessed_width),
-                                                     mode='area').byte()
+                                                          size=(int_preprocessed_height, int_preprocessed_width),
+                                                          mode='area').byte()
         target_img_copy = torch.nn.functional.interpolate(input=target_img.float().to(device),
-                                                     size=(int_preprocessed_height, int_preprocessed_width),
-                                                     mode='area').byte()
+                                                          size=(int_preprocessed_height, int_preprocessed_width),
+                                                          mode='area').byte()
         source_img_copy = source_img_copy.float().div(255.0)
         target_img_copy = target_img_copy.float().div(255.0)
         mean = torch.as_tensor(mean_vector, dtype=source_img_copy.dtype, device=source_img_copy.device)
@@ -152,11 +152,9 @@ class SemanticGLUNet_model(nn.Module):
 
         # resolution 256x256
         source_img_256 = torch.nn.functional.interpolate(input=source_img.float().to(device),
-                                                          size=(256, 256),
-                                                          mode='area').byte()
+                                                         size=(256, 256), mode='area').byte()
         target_img_256 = torch.nn.functional.interpolate(input=target_img.float().to(device),
-                                                          size=(256, 256),
-                                                          mode='area').byte()
+                                                         size=(256, 256), mode='area').byte()
 
         source_img_256 = source_img_256.float().div(255.0)
         target_img_256 = target_img_256.float().div(255.0)
@@ -232,8 +230,9 @@ class SemanticGLUNet_model(nn.Module):
         self.target_image_is_flipped = target_image_is_flipped
         im_source, im_target, im_source_256, im_target_256, ratio_x, ratio_y, \
         h_original, w_original = self.pre_process_data(im_source_base, im_target_base,
-                                                                 apply_flip=target_image_is_flipped, device=device)
-        return im_source.to(device), im_target.to(device), im_source_256.to(device), im_target_256.to(device), \
+                                                       apply_flip=target_image_is_flipped, device=device)
+        return im_source.to(device).contiguous(), im_target.to(device).contiguous(), \
+               im_source_256.to(device).contiguous(), im_target_256.to(device).contiguous(), \
                ratio_x, ratio_y, h_original, w_original
 
     def coarsest_resolution_flow(self, c14, c24, h_256, w_256):
@@ -346,8 +345,7 @@ class SemanticGLUNet_model(nn.Module):
                 for n in range(nbr_extra_layers):
                     ratio = 1.0 / (8.0 * 2 ** (nbr_extra_layers - n ))
                     up_flow3 = F.interpolate(input=flow3, size=(int(h_original * ratio), int(w_original * ratio)),
-                                             mode='bilinear',
-                                             align_corners=False)
+                                             mode='bilinear', align_corners=False)
                     c23_bis = torch.nn.functional.interpolate(c22, size=(int(h_original * ratio), int(w_original * ratio)), mode='area')
                     c13_bis = torch.nn.functional.interpolate(c12, size=(int(h_original * ratio), int(w_original * ratio)), mode='area')
                     warp3 = warp(c23_bis, up_flow3 * div * ratio)

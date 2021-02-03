@@ -193,7 +193,10 @@ class HomoAffTps_Dataset(Dataset):
         # rescale grid according to crop_factor and padding_factor
         sampling_grid.data = sampling_grid.data * padding_factor * crop_factor
         # sample transformed image
-        warped_image_batch = F.grid_sample(image, sampling_grid)
+        if float(torch.__version__[:3]) >= 1.3:
+            warped_image_batch = F.grid_sample(image, sampling_grid, align_corners=True)
+        else:
+            warped_image_batch = F.grid_sample(image, sampling_grid)
         return warped_image_batch
 
     def generate_grid(self, out_h, out_w, theta=None):
@@ -385,8 +388,12 @@ class HomoAffTps_Dataset(Dataset):
             # warp the fullsize original source image
             img_src_orig = torch.Tensor(img_src_orig.astype(np.float32))
             img_src_orig = img_src_orig.permute(2, 0, 1)
-            img_orig_target_vrbl = F.grid_sample(img_src_orig.unsqueeze(0),
-                                                 grid_full)
+            if float(torch.__version__[:3]) >= 1.3:
+                img_orig_target_vrbl = F.grid_sample(img_src_orig.unsqueeze(0),
+                                                     grid_full, align_corners=True)
+            else:
+                img_orig_target_vrbl = F.grid_sample(img_src_orig.unsqueeze(0),
+                                                     grid_full)
             img_orig_target_vrbl = \
                 img_orig_target_vrbl.squeeze().permute(1, 2, 0)
 
@@ -451,16 +458,17 @@ class HomoAffTps_Dataset(Dataset):
         if self.get_flow:
             # ATTENTION, here we just get the flow of the highest resolution asked, not the pyramid of flows !
             flow = unormalise_and_convert_mapping_to_flow(grid_pyramid[-1], output_channel_first=True)
+            mask = mask_x[-1] and mask_y[-1]
             return {'source_image': cropped_source_image,
                     'target_image': cropped_target_image,
-                    'flow_map': flow, # here flow map is 2 x h x w
-                    'correspondence_mask': np.logical_and(mask_x[-1].detach().numpy(),
-                                                          mask_y[-1].detach().numpy()).astype(np.uint8)}
+                    'flow_map': flow,  # here flow map is 2 x h x w
+                    'correspondence_mask': mask
+                    }
         else:
             # here we get both the pyramid of mappings and the last mapping (at the highest resolution)
             return {'source_image': cropped_source_image,
                     'target_image': cropped_target_image,
-                    'correspondence_map': grid_pyramid[-1], #torch tensor,  h x w x 2
+                    'correspondence_map': grid_pyramid[-1],  #torch tensor,  h x w x 2
                     'correspondence_map_pyro': grid_pyramid,
                     'mask_x': mask_x,
                     'mask_y': mask_y}

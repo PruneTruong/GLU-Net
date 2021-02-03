@@ -280,7 +280,8 @@ class GLUNet_model(nn.Module):
         im_source, im_target, im_source_256, im_target_256, ratio_x, ratio_y, \
         h_original, w_original = self.pre_process_data(im_source_base, im_target_base,
                                                        apply_flip=target_image_is_flipped, device=device)
-        return im_source.to(device), im_target.to(device), im_source_256.to(device), im_target_256.to(device), \
+        return im_source.to(device).contiguous(), im_target.to(device).contiguous(), \
+               im_source_256.to(device).contiguous(), im_target_256.to(device).contiguous(), \
                ratio_x, ratio_y, h_original, w_original
 
     def coarsest_resolution_flow(self, c14, c24, h_256, w_256):

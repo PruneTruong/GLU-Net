@@ -4,6 +4,7 @@ import torch.utils.data as data
 import numpy as np
 from imageio import imread
 import pickle
+import torch
 
 
 class ETH_interval(data.Dataset):
@@ -85,7 +86,8 @@ class ETH_interval(data.Dataset):
         return {'source_image': inputs[0],
                 'target_image': inputs[1],
                 'flow_map': target,
-                'correspondence_mask': mask.astype(np.uint8),
+                'correspondence_mask': mask.astype(np.bool) if float(torch.__version__[:3]) >= 1.1
+                else mask.astype(np.uint8),
                 'source_image_size': source_size,
                 }
 

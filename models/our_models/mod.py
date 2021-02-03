@@ -194,7 +194,7 @@ def warp(x, flo):
 
     if x.is_cuda:
         grid = grid.cuda()
-    vgrid = Variable(grid) + flo
+    vgrid = grid + flo
     # makes a mapping out of the flow
 
     # scale grid to [-1,1]
@@ -202,11 +202,9 @@ def warp(x, flo):
     vgrid[:, 1, :, :] = 2.0 * vgrid[:, 1, :, :].clone() / max(H - 1, 1) - 1.0
 
     vgrid = vgrid.permute(0, 2, 3, 1)
-    output = nn.functional.grid_sample(x, vgrid)
-    mask = torch.autograd.Variable(torch.ones(x.size())).cuda()
-    mask = nn.functional.grid_sample(mask, vgrid)
 
-    mask[mask < 0.9999] = 0
-    mask[mask > 0] = 1
-
-    return output * mask
+    if float(torch.__version__[:3]) >= 1.3:
+        output = nn.functional.grid_sample(x, vgrid, align_corners=True)
+    else:
+        output = nn.functional.grid_sample(x, vgrid)
+    return output
