@@ -281,7 +281,9 @@ python eval_ETH3D.py --model GLUNet --pre_trained_models DPED_CityScape_ADE --da
 ```
 
 <br />
-AEPE for different rates of intervals between image pairs. These results are computed with a slightly more precise ground-truth than in the paper.
+AEPE for different rates of intervals between image pairs (corresponds to Fig. 5 of the main paper and Tab. 9 in supplementary). 
+PCK results are also provided in the paper. 
+These results are computed with a slightly more precise ground-truth than in the paper.
 
 | Method               | rate=3   | rate=5 |   rate=7  |  rate=9   |  rate=11  | rate=13   |rate=15  |
 | -------------------- |:----:| ---:| ---- | ------------ | ----------- | ------ |:-----------:| 
@@ -378,7 +380,8 @@ python eval.py --model GLUNet --pre_trained_models DPED_CityScape_ADE --dataset 
 | PWC-Net (flying-chairs ft 3d-Things)    | 4.14       | 10.35      | 33.67   |
 | LiteFlowNet (flying-chairs ft 3d-Things| 4.0        | 10.39      | 28.50   |
 | DGC-Net  (tokyo)   | 8.50       | 14.97      | 50.98   |
-| GLU-Net  (CityScape-DPED-ADE)   | 3.34       | 9.79       | 37.52   |
+| **GLU-Net**  (CityScape-DPED-ADE)   | 3.34       | 9.79       | 37.52   |
+| **GLU-Net**  (CityScape-DPED-ADE), this repo   | 3.33       | 9.79       | 37.77   |
 
 Quantitative  results  on  optical  flow  KITTI  training datasets.  Fl-all: Percentage of outliers averaged over all pixels. 
 Inliers are defined as AEPE < 3 pixels or < 5 %. Lower F1 and AEPE are best.

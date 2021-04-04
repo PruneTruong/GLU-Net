@@ -65,7 +65,7 @@ def calculate_epe_and_pck_per_dataset(test_dataloader, network, device, threshol
     pck_alpha_0_05_over_image = []
     pck_thresh_1_over_image = []
     pck_thresh_5_over_image = []
-    F1 = []
+    F1 = 0.0
 
     n_registered_pxs = 0.0
     array_n_correct_correspondences = np.zeros(threshold_range.shape, dtype=np.float32)
@@ -140,7 +140,7 @@ def calculate_epe_and_pck_per_dataset(test_dataloader, network, device, threshol
             # number of correct pixel correspondence below a certain threshold, added for each batch
 
         if compute_F1:
-            F1.append(F1_kitti_2015(flow_est, flow_target) / flow_target.shape[0])
+            F1 += F1_kitti_2015(flow_est, flow_target)
 
         if save:
             writeFlow(np.dstack([flow_est_x[0].cpu().numpy(), flow_est_y[0].cpu().numpy()]),
@@ -156,5 +156,5 @@ def calculate_epe_and_pck_per_dataset(test_dataloader, network, device, threshol
                                                            (n_registered_pxs + 1e-6)).tolist()}
 
     if compute_F1:
-        output['kitti2015-F1'] = np.mean(F1)
+        output['kitti2015-F1'] = F1 / float(n_registered_pxs)
     return output
