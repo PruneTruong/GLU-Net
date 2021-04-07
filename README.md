@@ -1,17 +1,18 @@
+# Official implementation of GLUNet
 
 This is the official implementation of our paper : 
 
 **GLU-Net: Global-Local Universal Network for dense flow and correspondences (CVPR 2020-Oral).**
 
-Authors: [Prune Truong](prunetruong.com), [Martin Danelljan](https://martin-danelljan.github.io/) and Radu Timofte <br />
+Authors: [Prune Truong](https://prunetruong.com/), [Martin Danelljan](https://martin-danelljan.github.io/) and Radu Timofte <br />
 \[[Paper](https://arxiv.org/abs/1912.05524)\]\[[Website](https://prunetruong.com/research/glu-net)\]
 \[[Poster](https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing)\]
 \[[Oral Video](https://www.youtube.com/watch?v=xB2gNx8f8Xc&feature=emb_title)\]\[[Teaser Video](https://www.youtube.com/watch?v=s5OUdkM9QLo)\]
 
 
 
-Check out our new paper [**GOCor**](https://arxiv.org/abs/2009.07823) ([website](https://prunetruong.com/research/gocor))! 
-Code will be released soon [here](https://github.com/PruneTruong/GOCor). 
+Check out our related publication [**GOCor**](https://arxiv.org/abs/2009.07823) ([website](https://prunetruong.com/research/gocor)) 
+and corresponding code [here](https://github.com/PruneTruong/GOCor) ! 
 <br /><br /><br />
 
 
@@ -66,7 +67,7 @@ For more details, refer to our [paper](https://arxiv.org/abs/1912.05524)
 
 # 1. Installation <a name="Installation"></a>
 
-**ATTENTION** the models were trained with torch 1.0. Torch versions up to 1.7 were tested for inference on testing datasets but NOT for training, 
+Note that the models were trained with **torch 1.0**. Torch versions up to 1.7 were tested for inference on testing datasets but NOT for training, 
 so I cannot guarantee that the models train smoothly for higher torch versions. 
 
 
@@ -104,7 +105,7 @@ pip install cupy-cuda100==7.8.0 --no-cache-dir
 
 One can test GLU-Net on a pair of images using test_GLUNet.py and the provided trained model weights. 
 The inputs are the paths to the source and target images. They are then passed
-to the network which outputs the corresponding flow field relating the source to the target image. The source is then warped according to
+to the network which outputs the corresponding flow field relating the target to the source image. The source is then warped according to
 the estimated flow, and a figure is saved. 
 
 For this pair of images (provided to check that the code is working properly), the output is:
@@ -395,3 +396,4 @@ We borrow code from public projects, such as [DGC-Net](https://github.com/AaltoV
 * Remove useless parts + rename some functions / parameters
 * Modified READme to make it clearer
 * Added website + evaluation code for ETH3D
+* Modif of the READme file
