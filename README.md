@@ -5,14 +5,18 @@ This is the official implementation of our paper :
 **GLU-Net: Global-Local Universal Network for dense flow and correspondences (CVPR 2020-Oral).**
 
 Authors: [Prune Truong](https://prunetruong.com/), [Martin Danelljan](https://martin-danelljan.github.io/) and Radu Timofte <br />
-\[[Paper](https://arxiv.org/abs/1912.05524)\]\[[Website](https://prunetruong.com/research/glu-net)\]
+\[[Paper](https://arxiv.org/abs/1912.05524)\]
+\[[Website](https://prunetruong.com/research/glu-net)\]
 \[[Poster](https://drive.google.com/file/d/1pS_OMZ83EG-oalD-30vDa3Ru49GWi-Ky/view?usp=sharing)\]
-\[[Oral Video](https://www.youtube.com/watch?v=xB2gNx8f8Xc&feature=emb_title)\]\[[Teaser Video](https://www.youtube.com/watch?v=s5OUdkM9QLo)\]
+\[[Oral Video](https://www.youtube.com/watch?v=xB2gNx8f8Xc&feature=emb_title)\]
+\[[Teaser Video](https://www.youtube.com/watch?v=s5OUdkM9QLo)\]
 
 
 
 Check out our related publication [**GOCor**](https://arxiv.org/abs/2009.07823) ([website](https://prunetruong.com/research/gocor)) 
 and corresponding code [here](https://github.com/PruneTruong/GOCor) ! 
+
+For an improved version of a dense correspondence network, also predicting a confidence mask, check out [**PDCNet**](https://arxiv.org/abs/2101.01710) ([website](https://prunetruong.com/research/pdcnet)) and code [here](https://github.com/PruneTruong/DenseMatching). 
 <br /><br /><br />
 
 
@@ -140,7 +144,13 @@ CityScapes additionally adds about 23,000 images.
 We complement with a random sample of ADE-20K images with a minimum resolution of 750 x 750. 
 It results in 40.000 original images, used to create pairs of training images by applying geometric transformations to them. 
 The path to the original images as well as the geometric transformation parameters are given in the csv files
-''.
+'datasets/csv_files/homo_aff_tps_train_DPED_CityScape_ADE.csv' and 'datasets/csv_files/homo_aff_tps_test_DPED_CityScape_ADE.csv'.
+
+**Apparently, the structure of the ADE-20K dataset has changed and the provided paths in the csv files are not valid anymore**. 
+I am working on a fix for the ADE-20K images. 
+In the meantime, use 'datasets/csv_files/homo_aff_tps_train_DPED_CityScape.csv' and 'datasets/csv_files/homo_aff_tps_test_DPED_CityScape.csv' to exclude the ADE images (you don't need to download the ADE-20K dataset in that case). 
+Resulting training data is 31K images. Performance of the resulting trained model might be a bit different. 
+
  
 
 * Download the [DPED dataset](http://people.ee.ethz.ch/~ihnatova/) (54 GB) ==> images are created in original_images/
@@ -149,6 +159,7 @@ The path to the original images as well as the geometric transformation paramete
     - download leftImg8bit_trainextra.zip (44GB, left 8-bit images - trainextra set, 19998 images) ==> images are created in CityScape_extra/
 
 * Download the [ADE-20K dataset](https://groups.csail.mit.edu/vision/datasets/ADE20K/) (3.8 GB, 20.210 images) ==> images are created in ADE20K_2016_07_26/
+
 
 Put all the datasets in the same directory. 
 As illustration, your root training directory should be organised as follows:
@@ -357,7 +368,7 @@ Day/Night changes:
 Seasonnal changes:
 ![alt text](/images/seasonnal_changes.jpg)
 
-
+Some of the images are from the WxBS dataset [WxBS: Wide Baseline Stereo Generalizations. D. Mishkin et al. Proceedings of the British Machine Vision Conference. 2015. ]
 
 # 5.3. Performance on optical flow dataset <a name="OF"></a>
 
@@ -397,3 +408,4 @@ We borrow code from public projects, such as [DGC-Net](https://github.com/AaltoV
 * Modified READme to make it clearer
 * Added website + evaluation code for ETH3D
 * Modif of the READme file
+* Added reference to WxBS dataset and csv files excluding ADE dataset
