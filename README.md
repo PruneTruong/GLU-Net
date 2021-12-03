@@ -146,19 +146,12 @@ It results in 40.000 original images, used to create pairs of training images by
 The path to the original images as well as the geometric transformation parameters are given in the csv files
 'datasets/csv_files/homo_aff_tps_train_DPED_CityScape_ADE.csv' and 'datasets/csv_files/homo_aff_tps_test_DPED_CityScape_ADE.csv'.
 
-**Apparently, the structure of the ADE-20K dataset has changed and the provided paths in the csv files are not valid anymore**. 
-I am working on a fix for the ADE-20K images. 
-In the meantime, use 'datasets/csv_files/homo_aff_tps_train_DPED_CityScape.csv' and 'datasets/csv_files/homo_aff_tps_test_DPED_CityScape.csv' to exclude the ADE images (you don't need to download the ADE-20K dataset in that case). 
-Resulting training data is 31K images. Performance of the resulting trained model might be a bit different. 
-
- 
-
 * Download the [DPED dataset](http://people.ee.ethz.ch/~ihnatova/) (54 GB) ==> images are created in original_images/
 * Download the [CityScapes dataset](https://www.cityscapes-dataset.com/)
     - download 'leftImg8bit_trainvaltest.zip' (11GB, left 8-bit images - train, val, and test sets', 5000 images) ==> images are created in CityScape/
     - download leftImg8bit_trainextra.zip (44GB, left 8-bit images - trainextra set, 19998 images) ==> images are created in CityScape_extra/
 
-* Download the [ADE-20K dataset](https://groups.csail.mit.edu/vision/datasets/ADE20K/) (3.8 GB, 20.210 images) ==> images are created in ADE20K_2016_07_26/
+* Download the [ADE-20K dataset](https://drive.google.com/file/d/19r7dsYraHsNGI1ViZi4VwCfQywdODCDU/view?usp=sharing) (3.8 GB, 20.210 images) ==> images are created in ADE20K_2016_07_26/
 
 
 Put all the datasets in the same directory. 
@@ -409,3 +402,4 @@ We borrow code from public projects, such as [DGC-Net](https://github.com/AaltoV
 * Added website + evaluation code for ETH3D
 * Modif of the READme file
 * Added reference to WxBS dataset and csv files excluding ADE dataset
+* Added link to my own copy of the ADE-20K dataset
