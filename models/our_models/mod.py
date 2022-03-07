@@ -23,7 +23,12 @@ def predict_flow(in_planes):
 
 
 def deconv(in_planes, out_planes, kernel_size=4, stride=2, padding=1):
-    return nn.ConvTranspose2d(in_planes, out_planes, kernel_size, stride, padding, bias=True)
+    deconv_ = nn.ConvTranspose2d(in_planes, out_planes, kernel_size, stride, padding, bias=True)
+
+    nn.init.kaiming_normal_(deconv_.weight.data, mode='fan_in')
+    if deconv_.bias is not None:
+        deconv_.bias.data.zero_()
+    return deconv_
 
 
 def unnormalise_and_convert_mapping_to_flow(map):

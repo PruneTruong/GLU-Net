@@ -1,15 +1,13 @@
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 import os
-import sys
 from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, \
     CorrelationVolume, deconv, conv, predict_flow
 from models.feature_backbones.VGG_features import VGGPyramid
 import torch.nn.functional as F
-os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
 from models.correlation import correlation # the custom cost volume layer
 import numpy as np
+from .bilinear_deconv import BilinearConvTranspose2d
 
 
 class LOCALNet_model(nn.Module):
@@ -39,13 +37,20 @@ class LOCALNet_model(nn.Module):
         nd = (2*md+1)**2 # constrained corr, 4 pixels on each side
         od = nd
         self.decoder4 = OpticalFlowEstimator(in_channels=od, batch_norm=batch_norm)
-        self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv4 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+        # self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
         self.upfeat4 = deconv(od + dd[4], 2, kernel_size=4, stride=2, padding=1)
 
         nd = (2*md+1)**2 # constrained correlation, 4 pixels on each side
         od = nd + 4
         self.decoder3 = OpticalFlowEstimator(in_channels=od, batch_norm=batch_norm)
-        self.deconv3 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+
+        # self.deconv3 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv3 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+
         self.upfeat3 = deconv(od+dd[4], 2, kernel_size=4, stride=2, padding=1)
 
         nd = (2*md+1)**2 # constrained correlation, 4 pixels on each side
@@ -62,7 +67,7 @@ class LOCALNet_model(nn.Module):
         self.dc_conv7 = predict_flow(32)
 
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+            if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight.data, mode='fan_in')
                 if m.bias is not None:
                     m.bias.data.zero_()

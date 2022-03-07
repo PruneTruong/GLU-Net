@@ -34,6 +34,19 @@ If our project is helpful for your research, please consider citing :
 }
 ```
 
+
+
+## Updates
+
+06/03/2022: We found that significantly better performance and reduced training time are obtained when 
+**initializing with bilinear interpolation weights the weights of the transposed convolutions** used to upsample 
+the predicted flow fields between the different pyramid levels. We have integrated this initialization as the default. We might provide updated pre-trained weights as well.
+Alternatively, one can directly simply use bilinear interpolation for upsampling with similar 
+(maybe a bit better) performance, which is also now an option proposed. 
+
+
+
+
 # Network
 
 Our model GLU-Net is illustrated below:
@@ -116,21 +129,25 @@ For this pair of images (provided to check that the code is working properly), t
 
 ```bash
 python test_GLUNet.py --path_source_image images/yosemite_source.png --path_target_image images/yosemite_target.png --write_dir evaluation/
-
-additional optional arguments:
---pre_trained_models_dir (default is pre_trained_models/)
---pre_trained_model (default is DPED_CityScape_ADE)
 ```
+optional arguments:
+* ```--pre_trained_models_dir``` : Directory containing the pre-trained-models (default is pre_trained_models/)
+* ```--pre_trained_model```: Name of the pre-trained-model (default= DPED_CityScape_ADE )
+
+
 ![alt text](/images/yosemite_test_output.png)
 
 Another example and output (attention large images):
 ```bash
 python test_GLUNet.py --path_source_image images/hp_source.png --path_target_image images/hp_target.png --write_dir evaluation/
-
-optional arguments:
-* --pre_trained_models_dir : Directory containing the pre-trained-models (default is pre_trained_models/)
-* --pre_trained_model: Name of the pre-trained-model (default= DPED_CityScape_ADE )
 ```
+optional arguments:
+* ```--pre_trained_models_dir``` : Directory containing the pre-trained-models (default is pre_trained_models/)
+* ```--pre_trained_model```: Name of the pre-trained-model (default= DPED_CityScape_ADE )
+
+
+
+
 ![alt text](/images/hp_test_output.png)
 
 
@@ -197,19 +214,17 @@ Training files for GLUNet (and its variants, including Semantic-GLU-Net), GLOCAL
 **This will create the synthetic training and evaluation pairs along with the ground-truth on the fly !**
 ```bash 
 python train_GLUNet.py --name_exp GLUNet_train --training_data_dir /path/to/directory/original_images-for-training/ --evaluation_data_dir /path/to/directory/original_images-for-evaluation/
-
-if the network is already pretrained and the user wants to start the training from an old weight file
-* --pretrained /path/to/pretrained_file.pth
 ```
+
+if the network is already pretrained and the user wants to start the training from an old weight file:  ```--pretrained /path/to/pretrained_file.pth```
 
 **To load the pre-saved synthetic training and evaluation image pairs and ground truth flow fields instead (created earlier and saved to disk):**
 ```bash 
 python train_GLUNet.py --name_exp GLUNet_train --pre_loaded_training_dataset True --training_data_dir /path/to/directory/synthetic_training_image_pairs_and_flows/
 --evaluation_data_dir /path/to/directory/synthetic_validation_image_pairs_and_flows/
-
-if the network is already pretrained and the user wants to start the training from an old weight file
-* --pretrained /path/to/pretrained_file.pth
 ```
+
+if the network is already pretrained and the user wants to start the training from an old weight file:  ```--pretrained /path/to/pretrained_file.pth```
 
 In the training files, one can modify all the parameters of the network. The default ones are for GLU-Net. 
 
@@ -227,10 +242,8 @@ In the case of geometric matching, pairs of images present different viewpoints 
 To test on the HPatches dataset, HP-240 (images and flow rescaled to 240x240) and HP (original)
 ```bash
 python eval.py --model GLUNet --pre_trained_models DPED_CityScape_ADE --dataset HPatchesdataset --data_dir /directory/to/hpatches --save_dir /directory/to/save_dir
-
-optional argument: 
-* --hpatches_original_size To test on the original image size, True or False (default to False) 
 ```
+optional argument: ```--hpatches_original_size```, to test on the original image size, True or False (default to False). 
 
 Out of the 120 sequences of HPatches, we only evaluate on the 59 sequences in HP labelled with v_X, which have viewpoint changes, 
 thus excluding the ones labelled i_X, which only have illumination changes. 
@@ -315,18 +328,19 @@ In the case of semantic matching, pairs of images show two instances of the same
 To test on TSS
 ```bash
 python eval.py --model GLUNet --flipping_condition True --pre_trained_models DPED_CityScape_ADE --dataset TSS --data_dir /directory/to/TSS/DJOBS --save_dir /directory/to/save_dir 
-
-optional arguments:
-* --flipping condition True or False, for TSS recommanded
 ```
+
+optional arguments: ```--flipping condition True or False```, for TSS recommanded
+
 
 or for the custom network:
 ```bash
 python eval.py --model SemanticGLUNet --flipping_condition True --pre_trained_models DPED_CityScape_ADE --dataset TSS --data_dir /directory/to/TSS/JOBS --save_dir /directory/to/save_dir 
-
-optional arguments:
-* --flipping condition True or False, for TSS recommanded
 ```
+
+
+optional arguments: ```--flipping condition True or False```, for TSS recommanded
+
 
 <br />
 PCK [%] obtained on TSS for the task of semantic matching

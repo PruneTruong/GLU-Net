@@ -10,9 +10,9 @@ from .mod import CMDTop
 from models.our_models.mod import OpticalFlowEstimatorNoDenseConnection, OpticalFlowEstimator, FeatureL2Norm, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow, warp
 from models.our_models.consensus_network_modules import MutualMatching, NeighConsensus, FeatureCorrelation
-os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
 from models.correlation import correlation # the custom cost volume layer
 import numpy as np
+from .bilinear_deconv import BilinearConvTranspose2d
 
 
 class GLUNet_model(nn.Module):
@@ -60,13 +60,15 @@ class GLUNet_model(nn.Module):
         else:
             self.corr = CorrelationVolume()
 
-
         dd = np.cumsum([128,128,96,64,32])
         # 16x16
         nd = 16*16 # global correlation
         od = nd + 2
         self.decoder4 = CMDTop(in_channels=od, bn=batch_norm)
-        self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv4 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+        # self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
 
         # 32x32
         nd = (2*md+1)**2 # constrained correlation, 4 pixels on each side
@@ -110,7 +112,9 @@ class GLUNet_model(nn.Module):
         if self.decoder_inputs == 'corr_flow_feat':
             self.upfeat2 = deconv(input_to_refinement, self.upfeat_channels, kernel_size=4, stride=2, padding=1)
 
-        self.deconv2 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv2 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+        # self.deconv2 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
 
         if refinement_at_all_levels:
             # weights for refinement module
@@ -146,7 +150,7 @@ class GLUNet_model(nn.Module):
         self.l_dc_conv7 = predict_flow(32)
 
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+            if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight.data, mode='fan_in')
                 if m.bias is not None:
                     m.bias.data.zero_()

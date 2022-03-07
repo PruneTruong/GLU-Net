@@ -1,26 +1,23 @@
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
-import os
 import sys
 from models.feature_backbones.VGG_features import VGGPyramid
 from .mod import CMDTop
 from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow
 import torch.nn.functional as F
-os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
 try:
 	from models.correlation import correlation # the custom cost volume layer
 except:
 	sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
-
+from .bilinear_deconv import BilinearConvTranspose2d
 import numpy as np
 
 
 class GLOBALNet_model(nn.Module):
-    '''
+    """
     GLOBAL-Net model
-    '''
+    """
     def __init__(self, evaluation, div=1.0, refinement=True, batch_norm=True, pyramid_type='VGG'):
         """
         input: md --- maximum displacement (for correlation. default: 4), after warping
@@ -48,12 +45,17 @@ class GLOBALNet_model(nn.Module):
         nd = 16*16 # global correlation
         od = nd + 2
         self.decoder4 = CMDTop(in_channels=od, bn=batch_norm)
-        self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv4 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+        # self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
 
         nd = nbr_features[-4]*2 # concatenating the features
         od = nd + 2
         self.decoder3 = OpticalFlowEstimator(in_channels=od, batch_norm=batch_norm)
-        self.deconv3 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv3 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+        # self.deconv3 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+
         self.upfeat3 = deconv(od+dd[4], 2, kernel_size=4, stride=2, padding=1)
 
         nd = nbr_features[-3]*2 # concatenating the features
@@ -71,7 +73,7 @@ class GLOBALNet_model(nn.Module):
         self.dc_conv7 = predict_flow(32)
 
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+            if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight.data, mode='fan_in')
                 if m.bias is not None:
                     m.bias.data.zero_()

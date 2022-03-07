@@ -1,16 +1,13 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from torch.autograd import Variable
-import os
-import sys
 from models.feature_backbones.VGG_features import VGGPyramid
 from .mod import CMDTop
 from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow
 import torch.nn.functional as F
-os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory
 from models.correlation import correlation # the custom cost volume layer
+from .bilinear_deconv import BilinearConvTranspose2d
 
 
 class GLOCALNet_model(nn.Module):
@@ -48,7 +45,9 @@ class GLOCALNet_model(nn.Module):
         nd = 16*16 # global correlation
         od = nd + 2
         self.decoder4 = CMDTop(in_channels=od, bn=batch_norm)
-        self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv4 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+        # self.deconv4 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
 
         nd = (2*md+1)**2 # constrained correlation, 4 pixels on each side
         if self.input_decoder == 'flow_and_feat':
@@ -62,7 +61,11 @@ class GLOCALNet_model(nn.Module):
         elif self.input_decoder == 'flow':
             od = nd + 2
         self.decoder3 = OpticalFlowEstimator(in_channels=od, batch_norm=batch_norm)
-        self.deconv3 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+
+        # initialize the deconv to bilinear weights speeds up the training significantly
+        self.deconv3 = BilinearConvTranspose2d(2, 2, kernel_size=4, stride=2, padding=1)
+        # self.deconv3 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
+
         self.upfeat3 = deconv(od+dd[4], 2, kernel_size=4, stride=2, padding=1)
         if self.refinement_32:
             self.dc_conv1_level3 = conv(od + dd[4], 128, kernel_size=3, stride=1, padding=1, dilation=1,
@@ -103,7 +106,7 @@ class GLOCALNet_model(nn.Module):
         self.dc_conv7 = predict_flow(32)
 
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+            if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight.data, mode='fan_in')
                 if m.bias is not None:
                     m.bias.data.zero_()
