@@ -107,13 +107,9 @@ provided binary packages as outlined in the CuPy repository. The code was develo
 which is why I installed cupy for cuda90. For another CUDA version, change accordingly. 
 
 ```bash
-pip install cupy-cuda90==7.8.0 --no-cache-dir 
+pip install cupy-cuda90 --no-cache-dir 
 ```
 
-There are some issues with latest versions of cupy. So for all cuda, install cupy version 7.8.0. For example, on cuda10, 
-```bash
-pip install cupy-cuda100==7.8.0 --no-cache-dir 
-```
 
 * **Download an archive with pre-trained models [click](https://drive.google.com/open?id=15yXIi8kJbCyXCAHzg-UbMQ6RD2lJ1nOi) and extract it to the project folder**                                                
 
