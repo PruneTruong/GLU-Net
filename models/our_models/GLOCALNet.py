@@ -34,6 +34,7 @@ class GLOCALNet_model(nn.Module):
 
         self.input_decoder = input_decoder
         self.leakyRELU = nn.LeakyReLU(0.1)
+        self.tanh = nn.Tanh()
         self.corr = CorrelationVolume()
 
         # L2 feature normalisation
@@ -181,7 +182,7 @@ class GLOCALNet_model(nn.Module):
         est_map4 = self.decoder4(x1=corr4, x3=init_map)
 
         # conversion to flow and from there PWCNet
-        flow4 = unnormalise_and_convert_mapping_to_flow(est_map4) / self.div
+        flow4 = unnormalise_and_convert_mapping_to_flow(self.tanh(est_map4)) / self.div
         flow4[:, 0, :, :] /= ratio_x
         flow4[:, 1, :, :] /= ratio_y
         up_flow4 = self.deconv4(flow4)
